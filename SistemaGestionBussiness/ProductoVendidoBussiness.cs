@@ -20,14 +20,19 @@ namespace SistemaGestionBussiness
             return ProductoVendidoData.ObtenerProductoVendido(id);
         }
 
+        public static List<ProductoVendido> TraerProductosVendidos(int idUsuario)
+        {
+            return ProductoVendidoData.TraerProductosVendidos(idUsuario);
+        }
+
         public static void CrearProductoVendido(ProductoVendido productoVendido)
         {
             ProductoVendidoData.CrearProductoVendido(productoVendido);
         }
 
-        public static void ModificarProductoVendido(ProductoVendido productoVendido, int id)
+        public static void ModificarProductoVendido(int id, ProductoVendido productoVendido)
         {
-            ProductoVendidoData.ModificarProductoVendido(productoVendido, id);
+            ProductoVendidoData.ModificarProductoVendido(id, productoVendido);
         }
 
         public static bool EliminarProductoVendido(int id)

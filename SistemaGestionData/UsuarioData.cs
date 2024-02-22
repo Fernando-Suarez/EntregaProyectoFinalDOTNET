@@ -28,6 +28,7 @@ namespace SistemaGestionData
                     List<Usuario> usuarios = new List<Usuario>();
                     string query = "SELECT * FROM Usuario";
                     SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
                     while(reader.Read())
@@ -56,7 +57,7 @@ namespace SistemaGestionData
         {
             try
             {
-                Usuario? usuario = UsuarioData.ListarUsuarios().Find(p => p.Id == id);
+                Usuario? usuario = UsuarioData.ListarUsuarios().Find(u => u.Id == id);
                 return usuario;
             }
             catch (Exception ex)
@@ -64,8 +65,32 @@ namespace SistemaGestionData
                 throw new Exception("Usuario no Encontrado", ex);
             }
 
+        }
 
+        public static Usuario TraerUsuario(string nombreUsuario)
+        {
+            try
+            {
+                Usuario? usuario = UsuarioData.ListarUsuarios().Find(u => u.NombreUsuario == nombreUsuario);
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Usuario no Encontrado", ex);
+            }
+        }
 
+        public static Usuario InicioSesion(string nombreUsuario, string password)
+        {
+            try
+            {
+                Usuario? usuario = UsuarioData.ListarUsuarios().Find(u => u.NombreUsuario == nombreUsuario && u.Password == password);
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Usuario no Encontrado", ex);
+            }
 
         }
 
@@ -77,11 +102,11 @@ namespace SistemaGestionData
                 {
                     string query = "INSERT INTO Usuario(Nombre,Apellido,NombreUsuario,Contraseña,Mail) values(@nombre,@apellido,@nombreUsuario,@password,@email)";
                     SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("Nombre", usuario.Nombre);
-                    command.Parameters.AddWithValue("Apellido", usuario.Apellido);
-                    command.Parameters.AddWithValue("NombreUsuario", usuario.NombreUsuario);
-                    command.Parameters.AddWithValue("Contraseña", usuario.Password);
-                    command.Parameters.AddWithValue("Mail", usuario.Email);
+                    command.Parameters.AddWithValue("nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("apellido", usuario.Apellido);
+                    command.Parameters.AddWithValue("nombreUsuario", usuario.NombreUsuario);
+                    command.Parameters.AddWithValue("password", usuario.Password);
+                    command.Parameters.AddWithValue("email", usuario.Email);
                     connection.Open();
 
                     command.ExecuteNonQuery();
@@ -96,18 +121,21 @@ namespace SistemaGestionData
         }
 
   
-        public static void ModificarUsuario(Usuario usuario, int id)
+        public static void ModificarUsuario(int id, Usuario usuario)
         {
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    string query = "UPDATE Usuario SET Nombre = @nombre, Apellido = @apellido, NombreUsuario = @nombreUsuario WHERE Id = @id";
+                    string query = "UPDATE Usuario SET Nombre = @nombre, Apellido = @apellido, NombreUsuario = @nombreUsuario, Contraseña = @password, Mail = @email WHERE Id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("Id", usuario.Id);
-                    command.Parameters.AddWithValue("Nombre", usuario.Nombre);
-                    command.Parameters.AddWithValue("Apellido", usuario.Apellido);
-                    command.Parameters.AddWithValue("NombreUsuario", usuario.NombreUsuario);
+                    command.Parameters.AddWithValue("id", usuario.Id);
+                    command.Parameters.AddWithValue("nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("apellido", usuario.Apellido);
+                    command.Parameters.AddWithValue("nombreUsuario", usuario.NombreUsuario);
+                    command.Parameters.AddWithValue("password", usuario.Password);
+                    command.Parameters.AddWithValue("email", usuario.Email);
+
                     connection.Open();
 
                     command.ExecuteNonQuery();

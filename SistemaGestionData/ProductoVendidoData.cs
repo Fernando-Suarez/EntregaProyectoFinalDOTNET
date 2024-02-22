@@ -70,8 +70,28 @@ namespace SistemaGestionData
 
         }
 
+        public static List<ProductoVendido> TraerProductosVendidos(int idUsuario)
+        {
+            try
+            {
+                List<ProductoVendido> listaProductosVendidos = new List<ProductoVendido>();
+                List<Venta> listaIdVenta = VentaData.ObtenerVentaPorIdUsuario(idUsuario);
 
-    
+                foreach(Venta venta in listaIdVenta)
+                {
+                    listaProductosVendidos.Add(ProductoVendidoData.ObtenerProductoVendido(venta.Id));
+                }
+                //// con el idUsuario sacar el id de venta de la tabla Venta, crear una lista de productosVendidos con los id de venta y retornar la lista de productos vendidos
+                return listaProductosVendidos;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Productos Vendidos Al Usuario no Encontrados", ex);
+            }
+        }
+
+
+
         public static void CrearProductoVendido(ProductoVendido producto)
         {
             try
@@ -97,7 +117,7 @@ namespace SistemaGestionData
 
 
         
-        public static void ModificarProductoVendido(ProductoVendido productoVendido, int id)
+        public static void ModificarProductoVendido(int id , ProductoVendido productoVendido)
         {
            try
             {
@@ -142,6 +162,44 @@ namespace SistemaGestionData
 
         }
 
-        
+        public static void MarcarProductoVendido(int idVenta, List<Producto> productos)
+        {
+            try
+            {
+                foreach (Producto producto in productos)
+                {
+                    ProductoVendido productoVendido = new ProductoVendido();
+                    productoVendido.IdVenta = idVenta;
+                    productoVendido.IdProducto = producto.Id;
+                    productoVendido.Stock = producto.Stock;
+                    ProductoVendidoData.CrearProductoVendido(productoVendido);
+                }
+
+            }
+            catch(Exception ex) 
+            {
+                throw new Exception("No se pudo cargar el producto vendido", ex);
+            }
+        }
+
+
+        public static void ActualizarStockProductoVendido(List<Producto> productos)
+        {
+            try
+            {
+                foreach (Producto producto in productos)
+                {
+                    Producto productoActual = ProductoData.ObtenerProducto(producto.Id);
+                    productoActual.Stock -= producto.Stock;
+                    ProductoData.ModificarProducto( productoActual);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se pudo actualizar el  stock del producto", ex);
+            }
+        }
+
     }
 }

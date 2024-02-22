@@ -20,14 +20,19 @@ namespace SistemaGestionBussiness
             return ProductoData.ObtenerProducto(id);
         }
 
+        public static List<Producto> ProductosPorIdUsuario(int idUsuario)
+        {
+            return ProductoData.ProductosPorIdUsuario(idUsuario);
+        }
+
         public static void CrearProducto(Producto producto)
         {
             ProductoData.CrearProducto(producto);
         }
 
-        public static void ModificarProducto(Producto producto, int id)
+        public static void ModificarProducto( Producto producto)
         {
-            ProductoData.ModificarProducto(producto, id);
+            ProductoData.ModificarProducto( producto);
         }
 
         public static bool EliminarProducto(int id)

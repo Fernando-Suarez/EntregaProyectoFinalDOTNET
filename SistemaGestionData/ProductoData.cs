@@ -64,10 +64,27 @@ namespace SistemaGestionData
             {
                 throw new Exception("Producto  no Encontrado", ex);
             }
-            
+        }
 
-
-
+        public static List<Producto> ProductosPorIdUsuario(int idUsuario) 
+        {
+            try
+            {
+                List<Producto> productosUsuario = new List<Producto>();
+                
+                foreach (Producto item in ProductoData.ListarProductos())
+                {
+                    if(item.IdUsuario == idUsuario)
+                    {
+                        
+                        productosUsuario.Add(item);
+                    }
+                }
+                return productosUsuario;
+            }catch (Exception ex)
+            {
+                throw new Exception("Productos no Encontrados", ex);
+            }
         }
 
         public static void CrearProducto(Producto producto)
@@ -96,7 +113,7 @@ namespace SistemaGestionData
         }
 
         //ModificarProducto
-        public static void  ModificarProducto(Producto producto,int id)
+        public static void  ModificarProducto(Producto producto)
         {
             try
             {

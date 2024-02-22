@@ -15,9 +15,19 @@ namespace SistemaGestionBussiness
             return UsuarioData.ListarUsuarios();
         }
 
+        public static Usuario InicioSesion(string nombreUsuario, string password)
+        {
+            return UsuarioData.InicioSesion( nombreUsuario,  password);
+        }
+
         public static Usuario ObtenerUsuario(int id)
         {
             return UsuarioData.ObtenerUsuario(id);
+        }
+
+        public static Usuario TraerUsuario(string nombreUsuario)
+        {
+            return UsuarioData.TraerUsuario(nombreUsuario);
         }
 
         public static void CrearUsuario(Usuario usuario)
@@ -25,9 +35,9 @@ namespace SistemaGestionBussiness
             UsuarioData.CrearUsuario(usuario);
         }
 
-        public static void ModificarUsuario(Usuario usuario, int id)
+        public static void ModificarUsuario(int id, Usuario usuario)
         {
-            UsuarioData.ModificarUsuario(usuario, id);
+            UsuarioData.ModificarUsuario(id, usuario);
         }
 
         public static bool EliminarUsuario(int id)

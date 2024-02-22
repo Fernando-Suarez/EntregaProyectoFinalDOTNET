@@ -20,14 +20,24 @@ namespace SistemaGestionBussiness
             return VentaData.ObtenerVenta(id);
         }
 
+        public static List<Venta> ObtenerVentaPorIdUsuario(int idUsuario)
+        {
+            return VentaData.ObtenerVentaPorIdUsuario(idUsuario);
+        }
+
         public static void CrearVenta(Venta venta)
         {
             VentaData.CrearVenta(venta);
         }
 
-        public static void ModificarVenta(Venta venta, int id)
+        public static void CargarVenta(int idUsuario,List<Producto> productos)
         {
-            VentaData.ModificarVenta(venta, id);
+            VentaData.CargarVenta(idUsuario,productos);
+        }
+
+        public static void ModificarVenta(int id, Venta venta)
+        {
+            VentaData.ModificarVenta(id, venta);
         }
 
         public static bool EliminarVenta(int id)
