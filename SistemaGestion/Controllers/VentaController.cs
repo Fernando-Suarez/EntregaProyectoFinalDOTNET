@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SistemaGestionBussiness;
 using SistemaGestionEntities;
+using System.Net;
 
 namespace SistemaGestion.Controllers
 {
@@ -20,7 +21,7 @@ namespace SistemaGestion.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("No Se Pudo Obtener La Venta", ex);
+                return base.BadRequest(new { error = ex.Message, HttpStatusCode.BadRequest });
             }
 
         }
@@ -32,12 +33,12 @@ namespace SistemaGestion.Controllers
             try
             {
                 VentaBussiness.CargarVenta(idUsuario,productos);
-                return base.Ok(new { mensaje = "Venta Cargada", status = 201 });
+                return base.Created(nameof(CargarVenta),new { mensaje = "Venta Cargada", HttpStatusCode.Created });
 
             }
             catch (Exception ex)
             {
-                throw new Exception("No Se Pudo Cargar La Venta", ex);
+                return base.Conflict( new { error = ex.Message, HttpStatusCode.Conflict });
             }
         }
     }

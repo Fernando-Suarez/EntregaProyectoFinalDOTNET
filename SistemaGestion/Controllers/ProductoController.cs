@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SistemaGestionBussiness;
 using SistemaGestionEntities;
+using System.Net;
 
 namespace SistemaGestion.Controllers
 {
@@ -21,19 +22,19 @@ namespace SistemaGestion.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("No Se Pudo Obtener El listado de Productos", ex);
+                return base.BadRequest(new { error = ex.Message, status = HttpStatusCode.BadRequest });
             }
 
         }
 
 
         [HttpPost]
-        public IActionResult CrearProducto(Producto producto)
+        public IActionResult CrearProducto([FromBody] Producto producto)
         {
             try
             {
                 ProductoBussiness.CrearProducto(producto);
-                return base.Ok(new { mensaje = "Producto Creado", status = 201 });
+                return base.Created(nameof(CrearProducto) ,new { mensaje = "Producto Creado", status = HttpStatusCode.Created, producto });
 
             }
             catch (Exception ex)

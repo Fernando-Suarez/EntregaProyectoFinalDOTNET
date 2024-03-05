@@ -11,12 +11,6 @@ namespace SistemaGestionData
 {
     public static class VentaData
     {
-        private static string connectionString;
-
-        static VentaData()
-        {
-            VentaData.connectionString = "Server=.;Database=coderhouse;Trusted_Connection=true;";
-        }
         public static List<Venta> ListarVentas()
         {
             try
@@ -24,12 +18,10 @@ namespace SistemaGestionData
                 List<Venta> ventas = new List<Venta>();
                 string query = "SELECT Id,Comentarios,IdUsuario FROM Venta;";
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
 
                     SqlCommand command = new SqlCommand(query, connection);
-                    connection.Open();
-
                     SqlDataReader reader = command.ExecuteReader();
 
                     while (reader.Read())
@@ -37,12 +29,8 @@ namespace SistemaGestionData
                         Venta venta = new Venta();
                         venta.Id = Convert.ToInt32(reader["Id"]);
                         venta.Comentarios = reader["Comentarios"].ToString();
-
                         venta.IdUsuario = Convert.ToInt32(reader["IdUsuario"]);
-
                         ventas.Add(venta);
-
-
                     }
                 }
                 return ventas;
@@ -80,6 +68,10 @@ namespace SistemaGestionData
                         ventasUsuario.Add(v);
                     }
                 }
+                if (ventasUsuario.Count == 0)
+                {
+                    throw new Exception("Usuario sin Ventas ");
+                }
                 return ventasUsuario;
             }
             catch (Exception ex)
@@ -94,17 +86,13 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "INSERT INTO Venta(Comentarios,IdUsuario) values(@comentarios,@idUsuario)";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("comentarios", venta.Comentarios);
                     command.Parameters.AddWithValue("idUsuario", venta.IdUsuario);
-                    connection.Open();
-
                     command.ExecuteNonQuery();
-
-
                 }
             }
             catch (Exception ex)
@@ -118,15 +106,13 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "UPDATE Venta SET Comentarios = @comentarios, IdUsuario = @idUsuario WHERE Id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("id", venta.Id);
                     command.Parameters.AddWithValue("comentarios", venta.Comentarios);
                     command.Parameters.AddWithValue("idUsuario", venta.IdUsuario);
-                    connection.Open();
-
                     command.ExecuteNonQuery();
                 }
             }
@@ -142,7 +128,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
 
                     string query1 = "DELETE FROM ProductoVendido WHERE IdVenta = @id";
@@ -151,13 +137,8 @@ namespace SistemaGestionData
                     string query2 = "DELETE FROM Venta WHERE id = @id";
                     SqlCommand command2 = new SqlCommand(query2, connection);
                     command2.Parameters.AddWithValue("id", id);
-
-                    connection.Open();
-
                     command1.ExecuteNonQuery();
-
                     return command2.ExecuteNonQuery() > 1;
-
                 }
             }
             catch (Exception ex)
@@ -166,11 +147,11 @@ namespace SistemaGestionData
             }
         }
 
+
+        //Cargar Venta: Recibe una lista de productos y el numero de IdUsuario de quien la efectuó, primero cargar una nueva venta en la base de datos, luego debe cargar los productos recibidos en la base de ProductosVendidos uno por uno por un lado, y descontar el stock en la base de productos por el otro.
         public static void CargarVenta( int idUsuario , List<Producto> productos)
         {
-            //Cargar Venta: Recibe una lista de productos y el numero de IdUsuario de quien la efectuó, primero cargar una nueva venta en la base de datos, luego debe cargar los productos recibidos en la base de ProductosVendidos uno por uno por un lado, y descontar el stock en la base de productos por el otro.
-            
-            
+ 
             Venta venta = new Venta();
 
             List<string> listaDescripciones = productos.Select(p => p.Descripcion).ToList();

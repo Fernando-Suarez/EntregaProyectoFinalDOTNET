@@ -6,29 +6,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Net;
 
 namespace SistemaGestionData
 {
     public static class ProductoData
     {
-        private static string connectionString;
-
-        static ProductoData()
-        {
-            ProductoData.connectionString = "Server=.;Database=coderhouse;Trusted_Connection=true;";
-        }
+       
         public static List<Producto> ListarProductos()
         {
             try
             {
                 List<Producto> productos = new List<Producto>();
                 string query = "SELECT id,descripciones,costo,precioVenta,stock,idUsuario FROM Producto;";
-
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                // cambiar el connection = ConnectionAD.GetConnection()
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
 
                     SqlCommand command = new SqlCommand(query, connection);
-                    connection.Open();
+                    
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -80,8 +76,13 @@ namespace SistemaGestionData
                         productosUsuario.Add(item);
                     }
                 }
+                if (productosUsuario == null || productosUsuario.Count == 0)
+                {
+                throw new Exception("No se encuentra productos agregados por el Usuario");
+                }
                 return productosUsuario;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception("Productos no Encontrados", ex);
             }
@@ -91,7 +92,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "INSERT INTO Producto(Descripciones,Costo,PrecioVenta,Stock, IdUsuario) values(@descripciones,@costo,@precioVenta,@stock,@idUsuario)";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -100,7 +101,7 @@ namespace SistemaGestionData
                     command.Parameters.AddWithValue("PrecioVenta", producto.PrecioVenta);
                     command.Parameters.AddWithValue("Stock", producto.Stock);
                     command.Parameters.AddWithValue("IdUsuario", producto.IdUsuario);
-                    connection.Open();
+                   
 
                     command.ExecuteNonQuery();
 
@@ -108,7 +109,7 @@ namespace SistemaGestionData
                 }
             } catch (Exception ex) 
             {
-                throw new Exception("Producto  no Encontrado", ex);
+                throw new Exception("Producto no Encontrado", ex);
             }
         }
 
@@ -117,7 +118,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "UPDATE Producto SET Descripciones = @descripciones,Costo = @costo,PrecioVenta = @precioVenta,Stock = @stock, IdUsuario = @idUsuario WHERE Id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -127,7 +128,7 @@ namespace SistemaGestionData
                     command.Parameters.AddWithValue("PrecioVenta", producto.PrecioVenta);
                     command.Parameters.AddWithValue("Stock", producto.Stock);
                     command.Parameters.AddWithValue("IdUsuario", producto.IdUsuario);
-                    connection.Open();
+                    
 
                     command.ExecuteNonQuery();
                 }
@@ -143,7 +144,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query1 = "DELETE FROM ProductoVendido WHERE idProducto = @id";
                     SqlCommand command1 = new SqlCommand(query1, connection);
@@ -152,7 +153,7 @@ namespace SistemaGestionData
                     SqlCommand command2 = new SqlCommand(query2, connection);
                     command2.Parameters.AddWithValue("id", id);
                     
-                    connection.Open();
+                    
                         
                     command1.ExecuteNonQuery();
 

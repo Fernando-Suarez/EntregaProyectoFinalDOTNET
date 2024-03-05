@@ -13,22 +13,15 @@ namespace SistemaGestionData
 {
     public static class UsuarioData
     {
-        private static string connectionString;
-
-        static UsuarioData()
-        {
-            UsuarioData.connectionString = "Server=.;Database=coderhouse;Trusted_Connection=true;";
-        }
         public static List<Usuario> ListarUsuarios()
         {
             try
             {
-                using(SqlConnection connection = new SqlConnection(UsuarioData.connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     List<Usuario> usuarios = new List<Usuario>();
                     string query = "SELECT * FROM Usuario";
                     SqlCommand command = new SqlCommand(query, connection);
-                    connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
                     while(reader.Read())
@@ -85,6 +78,10 @@ namespace SistemaGestionData
             try
             {
                 Usuario? usuario = UsuarioData.ListarUsuarios().Find(u => u.NombreUsuario == nombreUsuario && u.Password == password);
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario o Password incorrectos");
+                }
                 return usuario;
             }
             catch (Exception ex)
@@ -98,7 +95,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "INSERT INTO Usuario(Nombre,Apellido,NombreUsuario,Contraseña,Mail) values(@nombre,@apellido,@nombreUsuario,@password,@email)";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -107,11 +104,7 @@ namespace SistemaGestionData
                     command.Parameters.AddWithValue("nombreUsuario", usuario.NombreUsuario);
                     command.Parameters.AddWithValue("password", usuario.Password);
                     command.Parameters.AddWithValue("email", usuario.Email);
-                    connection.Open();
-
                     command.ExecuteNonQuery();
-
-
                 }
             }
             catch (Exception ex)
@@ -125,7 +118,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "UPDATE Usuario SET Nombre = @nombre, Apellido = @apellido, NombreUsuario = @nombreUsuario, Contraseña = @password, Mail = @email WHERE Id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -135,9 +128,6 @@ namespace SistemaGestionData
                     command.Parameters.AddWithValue("nombreUsuario", usuario.NombreUsuario);
                     command.Parameters.AddWithValue("password", usuario.Password);
                     command.Parameters.AddWithValue("email", usuario.Email);
-
-                    connection.Open();
-
                     command.ExecuteNonQuery();
                 }
             }
@@ -153,7 +143,7 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
 
                     string query1 = "DELETE FROM Venta WHERE IdUsuario = @id";
@@ -162,13 +152,9 @@ namespace SistemaGestionData
                     string query2 = "DELETE FROM Usuario WHERE id = @id";
                     SqlCommand command2 = new SqlCommand(query2, connection);
                     command2.Parameters.AddWithValue("id", id);
-
-                    connection.Open();
-
                     command1.ExecuteNonQuery();
 
                     return command2.ExecuteNonQuery() > 1;
-
                 }
             }
             catch (Exception ex)

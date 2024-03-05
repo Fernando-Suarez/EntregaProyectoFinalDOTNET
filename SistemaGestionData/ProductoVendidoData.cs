@@ -10,12 +10,7 @@ namespace SistemaGestionData
 {
     public static class ProductoVendidoData
     {
-        private static string connectionString;
 
-        static ProductoVendidoData()
-        {
-            ProductoVendidoData.connectionString = "Server=.;Database=coderhouse;Trusted_Connection=true;";
-        }
         public static List<ProductoVendido> ListarProductosVendidos()
         {
             try 
@@ -23,11 +18,11 @@ namespace SistemaGestionData
                 List<ProductoVendido> productosVendidos = new List<ProductoVendido>();
                 string query = "SELECT Id,Stock,IdProducto,IdVenta FROM ProductoVendido;";
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
 
                     SqlCommand command = new SqlCommand(query, connection);
-                    connection.Open();
+                    
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -45,6 +40,7 @@ namespace SistemaGestionData
                     }
                 }
                 return productosVendidos;
+
             } catch (Exception ex)
             {
                 throw new Exception("Producto Vendidos no Encontrados", ex);
@@ -73,7 +69,7 @@ namespace SistemaGestionData
         public static List<ProductoVendido> TraerProductosVendidos(int idUsuario)
         {
             try
-            {
+            { 
                 List<ProductoVendido> listaProductosVendidos = new List<ProductoVendido>();
                 List<Venta> listaIdVenta = VentaData.ObtenerVentaPorIdUsuario(idUsuario);
 
@@ -81,7 +77,10 @@ namespace SistemaGestionData
                 {
                     listaProductosVendidos.Add(ProductoVendidoData.ObtenerProductoVendido(venta.Id));
                 }
-                //// con el idUsuario sacar el id de venta de la tabla Venta, crear una lista de productosVendidos con los id de venta y retornar la lista de productos vendidos
+                if (listaProductosVendidos.Count == 0)
+                {
+                    throw new Exception("Sin Productos Vendidos al usuario");
+                }
                 return listaProductosVendidos;
             }
             catch (Exception ex)
@@ -96,23 +95,18 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "INSERT INTO ProductoVendido(Stock,IdProducto,IdVenta) values(@Stock,@IdProducto,@IdVenta)";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("Stock", producto.Stock);
                     command.Parameters.AddWithValue("IdProducto", producto.IdProducto);
                     command.Parameters.AddWithValue("IdVenta", producto.IdVenta);
-                    connection.Open();
-
-                    command.ExecuteNonQuery();
-
-
-                }
+                    command.ExecuteNonQuery();}
             } catch (Exception ex)
-            {
-                throw new Exception("No se pudo crear el producto vendido", ex);
-            }
+                {
+                    throw new Exception("No se pudo crear el producto vendido", ex);
+                }
         }
 
 
@@ -121,7 +115,7 @@ namespace SistemaGestionData
         {
            try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "UPDATE ProductoVendido SET Stock = @stock, IdProducto = @idProducto, IdVenta = @idVenta WHERE Id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -129,8 +123,6 @@ namespace SistemaGestionData
                     command.Parameters.AddWithValue("Stock", productoVendido.Stock);
                     command.Parameters.AddWithValue("IdProducto", productoVendido.IdProducto);
                     command.Parameters.AddWithValue("IdVenta", productoVendido.IdVenta);
-                    connection.Open();
-
                     command.ExecuteNonQuery();
                 }
             }
@@ -145,16 +137,12 @@ namespace SistemaGestionData
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = ConnectionADO.GetConnection())
                 {
                     string query = "DELETE FROM ProductoVendido WHERE id = @id";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("id", id);
-                    connection.Open();
-
-                    return command.ExecuteNonQuery() > 0;
-
-                }
+                    return command.ExecuteNonQuery() > 0;   }
             }catch (Exception ex)
             {
                 throw new Exception("No se pudo eliminar el producto vendido", ex);

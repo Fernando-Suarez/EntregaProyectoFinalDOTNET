@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SistemaGestionBussiness;
 using SistemaGestionEntities;
+using System.Net;
 
 namespace SistemaGestion.Controllers
 {
@@ -19,7 +20,7 @@ namespace SistemaGestion.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("No Se Pudo Obtener El Listado de Productos Vendidos", ex);
+                return base.BadRequest(new { error = ex.Message, status = HttpStatusCode.BadRequest });
             }
 
         }

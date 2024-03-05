@@ -2,6 +2,7 @@
 using SistemaGestionBussiness;
 using Microsoft.AspNetCore.Mvc;
 using SistemaGestionEntities;
+using System.Net;
 
 namespace SistemaGestion.Controllers
 {
@@ -20,7 +21,7 @@ namespace SistemaGestion.Controllers
                 return base.Ok(new { mensaje = "" , StatusCode = 200, usuario });
             }catch (Exception ex)
             {
-                throw new Exception("Error al Iniciar Sesion", ex);
+                return base.Conflict(new { error = ex.Message, status = HttpStatusCode.Conflict });
             }
         }
        
@@ -48,7 +49,7 @@ namespace SistemaGestion.Controllers
             try
             {
                 UsuarioBussiness.CrearUsuario(usuario);
-                return base.Ok(new { mensaje = "Usuario Creado", status = 201 });
+                return base.Created(nameof(CrearUsuario),new { mensaje = "Usuario Creado", status = 201, usuario });
 
             }catch (Exception ex)
             {
